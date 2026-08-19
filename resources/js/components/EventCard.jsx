@@ -1,0 +1,2 @@
+import { Link } from 'react-router-dom';
+export default function EventCard({event}) { const date=new Intl.DateTimeFormat(undefined,{dateStyle:'long',timeStyle:'short'}).format(new Date(event.event_date)); return <article className="event-card"><div className="event-date">{date}</div><h2>{event.name}</h2><p>{event.description}</p><div className="event-footer"><span>{event.remaining_capacity} of {event.capacity} places left</span><Link className="button" to={`/events/${event.id}/register`}>Register</Link></div></article>; }
