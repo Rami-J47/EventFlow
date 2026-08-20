@@ -27,4 +27,19 @@ class EventApiTest extends TestCase
         Event::factory()->create(['event_date' => now()->subDay()]);
         $this->getJson('/api/events')->assertOk()->assertJsonCount(0, 'data');
     }
+
+    public function test_event_capacity_cannot_be_reduced_below_existing_registrations(): void
+    {
+        $event = Event::factory()->create(['capacity' => 3]);
+        $event->registrations()->createMany([
+            ['registration_reference' => 'EVT-AAAA1111', 'first_name' => 'Rami', 'last_name' => 'Jawhary', 'email' => 'rami@example.com', 'phone' => '+961 70 111 111'],
+            ['registration_reference' => 'EVT-BBBB2222', 'first_name' => 'Maya', 'last_name' => 'Haddad', 'email' => 'maya@example.com', 'phone' => '+961 70 222 222'],
+        ]);
+
+        $this->patchJson("/api/events/{$event->id}", ['capacity' => 1])
+            ->assertUnprocessable()
+            ->assertJsonValidationErrors('capacity');
+
+        $this->assertDatabaseHas('events', ['id' => $event->id, 'capacity' => 3]);
+    }
 }

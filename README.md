@@ -4,7 +4,9 @@ EventFlow is the focused event-registration application requested by the Full-St
 
 ## Live URL
 
-Not deployed yet. A public HTTPS URL requires a hosting account and production PostgreSQL credentials. The repository is deployment-ready; update this section after deployment.
+[https://eventflow-production-hfo70t.laravel.cloud/](https://eventflow-production-hfo70t.laravel.cloud/)
+
+No login or test credentials are required. The public registration flow and server-side webhook demonstration are available from the homepage.
 
 ## Verified technology versions
 
@@ -36,6 +38,7 @@ DB_PORT=5432
 DB_DATABASE=eventflow
 DB_USERNAME=postgres
 DB_PASSWORD=your-local-password
+DB_SCHEMA=public
 WEBHOOK_SECRET=use-a-long-random-local-secret
 ```
 
@@ -131,15 +134,15 @@ php artisan route:cache
 php artisan view:cache
 ```
 
-Test the deployed flow in a private browser, then add its URL above and to the submission message.
+Laravel Cloud hosts the application over HTTPS. The deployed assignment uses an isolated `eventflow` schema in a Supabase-hosted PostgreSQL database; database credentials remain server-only Laravel Cloud variables. After every deployment, run the migrations, seed demo events once when needed, and smoke-test the full flow in a private browser.
 
 ## Known limitations
 
-- Event write APIs have no authentication because the assignment does not request it.
+- Event-management write APIs intentionally have no production authentication because it is outside the assignment scope; add authentication before exposing them in a real product.
 - Pending reservations do not expire; React polls rather than using WebSockets.
 - Only `ticket.confirmed` is supported.
 - The demo sender is an interview aid, not a real provider account.
-- Public deployment remains pending hosting access.
+- The free Supabase project may pause after one week without activity; keep it active throughout the evaluation period.
 
 Troubleshooting: enable `pdo_pgsql` if PHP reports a missing driver; check PostgreSQL and `.env` on connection refusal; clear config with `php artisan config:clear`; run `pnpm run build` if the Vite manifest is missing; and ensure both webhook sides sign identical raw bytes.
 
