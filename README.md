@@ -107,7 +107,7 @@ Webhook body:
 
 ## Architecture and decisions
 
-See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for diagrams and [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md) for PDF traceability.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for diagrams, [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md) for PDF traceability, and [docs/INTERVIEW_PLAYBOOK.md](docs/INTERVIEW_PLAYBOOK.md) for the technical-discussion walkthrough.
 
 `RegistrationService` opens `DB::transaction`, reloads the event with `lockForUpdate`, checks availability/capacity, and inserts. A plain count/insert has a race: two requests can see the last seat. PostgreSQL makes the second transaction wait; after the first commits, it recounts and receives 409. Pending registrations reserve seats because registration already succeeded.
 

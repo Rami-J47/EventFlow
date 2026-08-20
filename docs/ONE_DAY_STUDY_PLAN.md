@@ -2,6 +2,8 @@
 
 This is a speaking-and-coding plan, not a reading checklist. For every block: read the named files, close them, explain the flow aloud, then reopen them and correct yourself.
 
+Use `docs/INTERVIEW_PLAYBOOK.md` as the detailed explanation and question bank for each block.
+
 ## The story to know by heart
 
 EventFlow is a Laravel API with a React/Vite frontend and PostgreSQL database. Users list available events, submit a registration, receive a public reference, and wait for a ticketing webhook to confirm the registration. Laravel protects the last seat with a database transaction and row lock. It protects the webhook with HMAC-SHA256 over the exact raw request body and handles provider retries idempotently.

@@ -106,6 +106,18 @@ I did not treat generated code as correct merely because it looked plausible. Th
 
 The application was later deployed to Laravel Cloud over HTTPS. A production smoke test found that the page loaded but the event API initially returned HTTP 500, so deployment was not treated as complete until its database configuration, migrations, seed data, and full registration/webhook flow could be verified.
 
+The first Laravel Cloud account opened during diagnosis was the wrong account, which correctly showed no applications. After the owner signed into the account that owned EventFlow, AI found that no database resource was attached. The paid Laravel Cloud PostgreSQL option was rejected because of its displayed potential monthly cost. Instead, the owner approved using an existing free Supabase PostgreSQL project. AI created an isolated `eventflow` schema and a restricted non-admin `eventflow_app` role so the assignment would not mix with or gain access to the existing application's tables.
+
+Deployment debugging produced further useful evidence:
+
+- Supabase's shared pooler rejected the custom database role, so the connection was changed to the documented direct PostgreSQL endpoint.
+- Laravel Cloud required environment changes to be explicitly deployed before commands used them; the first retry still used the previous variables.
+- Laravel migrations then created all three assignment tables and the seeder created two demonstration events.
+- The first production web request after that failed because Laravel Cloud had not supplied a valid `APP_KEY`; AI generated a standard 32-byte Laravel key, stored it only in private environment variables, and redeployed.
+- The final public test created reference `EVT-AVRM4O46`, observed `pending`, invoked the real signed webhook flow, observed `confirmed`, and received `duplicate: true` from a repeated confirmation. A database query confirmed two events, one registration, one webhook log, and the confirmed state.
+- `php artisan test` could not run inside the optimized production image because development dependencies and the test command are intentionally excluded. This was reported as an unavailable production command, not as a passing or failing suite. The previously verified local suite remains 9 tests with 41 assertions; the frontend production build was rerun successfully after documentation/configuration work.
+- Supabase's performance advisor identified that PostgreSQL had no covering index for the registrations foreign key. A new forward Laravel migration added the `registrations.event_id` index instead of rewriting an already-applied migration.
+
 ## Interview explanation
 
 If asked how I used AI, I would say:
